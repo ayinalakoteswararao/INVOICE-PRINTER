@@ -1,0 +1,115 @@
+{% extends "_layout.html" %}
+{% block body %}
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h4 class="mb-0"><i class="bi bi-receipt"></i> Tax Invoice</h4>
+    <span class="badge bg-light text-primary fs-6">#{{ inv_no }}</span>
+  </div>
+  <div class="card-body">
+    <form id="invForm">
+      <!-- Customer section -------------------------------------------------->
+      <h5 class="mb-3">Customer Details</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label">Name</label>
+          <input class="form-control" name="cust_name" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Address</label>
+          <input class="form-control" name="cust_addr" required>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Vehicle No.</label>
+          <input class="form-control" name="vehicle">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Job Card No.</label>
+          <input class="form-control" name="jobcard">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">PO No.</label>
+          <input class="form-control" name="po">
+        </div>
+      </div>
+
+      <!-- GST toggle ------------------------------------------------------->
+      <div class="form-check form-switch mb-4">
+        <input class="form-check-input" type="checkbox" id="gstToggle" checked>
+        <label class="form-check-label" for="gstToggle">Include GST</label>
+      </div>
+
+      <!-- Items table ------------------------------------------------------->
+      <h5 class="mb-2">Invoice Items</h5>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle border" id="itemTable">
+          <thead class="table-light">
+            <tr class="text-center">
+              <th>Description</th><th>HSN</th><th>Qty</th><th>Rate</th><th>%GST</th><th style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-outline-primary btn-sm mb-3" onclick="addRow()">
+        <i class="bi bi-plus-circle"></i> Add row
+      </button>
+
+      <!-- Action buttons ---------------------------------------------------->
+      <div class="d-flex justify-content-end gap-2">
+        <button type="reset" class="btn btn-secondary"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+        <button class="btn btn-success" type="submit"><i class="bi bi-file-earmark-pdf"></i> Generate PDF</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function addRow() {
+  const tb = document.querySelector('#itemTable tbody');
+  const r = tb.insertRow();
+  r.innerHTML = `
+    <td><input class="form-control form-control-sm" name="desc" required></td>
+    <td><input class="form-control form-control-sm" name="hsn"  style="width:90px"></td>
+    <td><input class="form-control form-control-sm text-end" name="qty"  style="width:70px" value="1"></td>
+    <td><input class="form-control form-control-sm text-end" name="rate" style="width:90px"></td>
+    <td><input class="form-control form-control-sm text-end" name="gst"  style="width:70px" value="18"></td>
+    <td class="text-center"><button class="btn btn-sm btn-danger" type="button" onclick="this.closest('tr').remove()"><i class="bi bi-trash"></i></button></td>`;
+  toggleGST();
+}
+addRow();
+
+function toggleGST(){
+  const on = document.getElementById('gstToggle').checked;
+  document.querySelectorAll('[name="gst"]').forEach(inp=>{
+    inp.disabled = !on;
+    if(!on) inp.value = 0;
+  });
+}
+document.getElementById('gstToggle').addEventListener('change', toggleGST);
+
+document.getElementById('invForm').addEventListener('submit', async (e) =>{
+  e.preventDefault();
+  const f = e.target;
+  const cust = {
+    name:    f.cust_name.value.trim(),
+    address: f.cust_addr.value.trim(),
+    vehicle: f.vehicle.value.trim(),
+    jobcard: f.jobcard.value.trim(),
+    po:      f.po.value.trim()
+  };
+  const items=[];
+  document.querySelectorAll('#itemTable tbody tr').forEach(tr=>{
+    const v= q=> tr.querySelector(`[name="${q}"]`).value.trim();
+    if (v('desc')) items.push({desc:v('desc'),hsn:v('hsn'),qty:v('qty'),rate:v('rate'),gst:v('gst')})
+  });
+  if (!items.length){ alert("Add at least one item"); return;}
+
+  const payload = new FormData();
+  payload.append('payload', JSON.stringify({customer:cust, items:items, with_gst: document.getElementById('gstToggle').checked}));
+  const res = await fetch('/generate', {method:'POST', body: payload});
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+});
+</script>
+{% endblock %}
