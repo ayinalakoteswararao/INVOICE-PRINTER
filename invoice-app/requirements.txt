@@ -1,0 +1,8 @@
+Flask>=2.0
+Flask-SQLAlchemy>=3.0
+PyMySQL>=1.0
+reportlab
+qrcode
+Pillow
+num2words
+gunicorn==21.2.0      # optional, but needed on most PaaS
