@@ -18,110 +18,153 @@ Both interfaces render the final invoice with **ReportLab**, embed a **QR code**
 • Embeds machine-readable **QR code** with invoice meta.  
 • Works completely offline; no external services required.
 
----
+# � Invoice Generator Pro
 
-## 📂 Project Layout
+![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.0+-black?logo=flask)
+![MySQL](https://img.shields.io/badge/MySQL-8.0+-blue?logo=mysql&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+A professional invoice generation system with both **Desktop (Tkinter)** and **Web (Flask)** interfaces, designed specifically for Indian GST compliance with QR code support.
+
+## 🌟 Features
+
+### 📋 Core Features
+- 🖥️ **Dual Interface**: Choose between desktop or web interface
+- 🧾 **GST Compliant**: Automatically calculates CGST & SGST
+- 📄 **PDF Generation**: Professional invoice generation with ReportLab
+- 🔍 **QR Code**: Embeds invoice details in QR code
+- 💾 **Database**: MySQL integration for data persistence
+
+### �️ Technical Highlights
+- 🐍 Built with Python 3.8+
+- 🌐 Web interface powered by Flask
+- 💽 MySQL database for data storage
+- 🎨 Clean, responsive UI
+- 🔒 Secure data handling
+
+## � Project Structure
 
 ```
-Bill Genration Using Pyhton/
-│  README.md               ← you are here
-│  invoice_generator.py    ← Stand-alone Tkinter GUI
+Bill-Generation-Using-Python/
 │
-└─ invoice-app/            ← Flask web application
-   ├─ app.py               ← Flask routes / PDF generation
-   ├─ requirements.txt     ← Python dependencies for the web app
-   ├─ templates/           ← Jinja2 HTML templates
-   └─ static/              ← logo.png & other assets
+├── invoice-app/                 # Flask web application
+│   ├── app.py                  # Main application file with routes and logic
+│   ├── requirements.txt         # Python dependencies
+│   ├── config.py               # Configuration settings
+│   │
+│   ├── static/                 # Static files
+│   │   ├── css/               # CSS stylesheets
+│   │   ├── js/                # JavaScript files
+│   │   └── images/            # Image assets
+│   │
+│   └── templates/              # HTML templates
+│       ├── base.html          # Base template
+│       ├── index.html         # Main page
+│       └── partials/          # Reusable template components
+│
+├── invoice_generator.py        # Desktop GUI application
+├── requirements.txt            # Main project dependencies
+└── README.md                  # Project documentation
 ```
 
-> Note: The misspelling in the folder name comes from the original upload and is kept to avoid breaking paths.
+## �🚀 Quick Start
+
+### Prerequisites
+- Python 3.8 or higher
+- MySQL Server 8.0+
+- pip (Python package manager)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/invoice-generator.git
+   cd invoice-generator
+   ```
+
+2. **Set up a virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure the database**
+   - Create a MySQL database
+   - Update the database configuration in `config.py`
+   - Initialize the database:
+     ```bash
+     flask init-db
+     ```
+
+5. **Run the application**
+   - For web interface:
+     ```bash
+     cd invoice-app
+     flask run
+     ```
+   - For desktop interface:
+     ```bash
+     python invoice_generator.py
+     ```
+
+## 🖥️ Web Interface
+
+Access the web interface at `http://localhost:5000`
+
+### Features
+- 📱 Responsive design
+- 🔄 Real-time calculations
+- 💾 Auto-save functionality
+- 📤 PDF download
+
+## 🖥️ Desktop Interface
+
+Run `invoice_generator.py` to launch the desktop application.
+
+### Features
+- 🖱️ Native look and feel
+- ⚡ Fast performance
+- 💾 Local data storage
+- 🖨️ Direct printing support
+
+## 🛠️ Configuration
+
+Edit `config.py` to customize:
+- Company details
+- GST rates
+- Database connection
+- Application settings
+
+## 📦 Deployment
+
+### PythonAnywhere
+1. Upload your code to PythonAnywhere
+2. Set up a new web app
+3. Configure the database
+4. Set environment variables
+5. Install dependencies
+6. Initialize the database
+
+## � License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) to get started.
+
+## 📞 Support
+
+For support, email ayinalakoteswararao@gmail.com or open an issue in the GitHub repository.
 
 ---
 
-## 🚀 Quick Start
-
-### 1. Clone / Download
-```
-$ git clone <repo-url>
-$ cd "Bill Genration Using Pyhton"
-```
-
-### 2. Create a virtualenv (recommended)
-```
-# Windows
-> python -m venv venv
-> venv\Scripts\activate
-
-# macOS / Linux
-$ python3 -m venv venv
-$ source venv/bin/activate
-```
-
-### 3. Install dependencies
-```
-(venv) $ pip install -r invoice-app/requirements.txt
-```
-This installs **Flask**, **ReportLab**, **qrcode** and **Pillow**.
-
----
-
-## 🖥️ Running the Desktop GUI
-
-```
-(venv) $ python invoice_generator.py
-```
-A resizable Tkinter window opens where you can enter customer & vehicle details, add items and click **Generate Invoice**.  The PDF is saved in the working directory (e.g. `invoice_0001.pdf`).
-
----
-
-## 🌐 Running the Web App
-
-### Development server (auto-reload)
-```
-(venv) $ cd invoice-app
-(venv) $ python app.py
-```
-Visit `http://127.0.0.1:5000` in your browser.
-
-### Production (Gunicorn example)
-```
-(venv) $ cd invoice-app
-(venv) $ gunicorn -w 4 -b 0.0.0.0:8000 app:APP
-```
-
-> Change worker count & port as needed.  Deploy behind Nginx or any PaaS that supports WSGI apps.
-
----
-
-## ⚙️ Configuration
-
-All company-specific values (name, address, GSTIN, logo path, etc.) live in **one place**:
-
-* Desktop GUI → variables inside `InvoiceGenerator.__init__` (``invoice_generator.py``)
-* Web app      → the `COMPANY` dict near the top of `invoice-app/app.py`
-
-Replace the default placeholder logo (`static/logo.png`) with your own 300×300 PNG for best results.
-
----
-
-## 🧪 Tests
-No automated tests yet.  Feel free to contribute!
-
----
-
-## 📜 License
-This project is released under the **MIT License** – see `LICENSE` for details.
-
----
-
-## 🙏 Acknowledgements
-• Python core devs 🐍  
-• ReportLab for PDF generation  
-• Pillow for image processing  
-• qrcode library  
-• Flask framework  
-
----
-
-### ✍️ Author
-Satya Sai Baba Auto Electrical Works – Gudivada, AP
+<div align="center">
+  Made with ❤️ by Ayinala-KoteswaraRao
+</div>
