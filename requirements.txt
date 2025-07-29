@@ -1,5 +1,0 @@
-Flask==3.0.2
-reportlab==4.1.0
-qrcode==7.4.2
-Pillow==10.3.0
-gunicorn==21.2.0      # optional, but needed on most PaaS
